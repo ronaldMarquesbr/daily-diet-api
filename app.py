@@ -26,7 +26,7 @@ def create_meal():
     if name and description and date and off_diet:
 
         if not is_valid_datetime(date):
-            return jsonify({"message": "Invalid date format"}), 400
+            return jsonify({"message": "Formato de data invalido"}), 400
 
         meal = Meal(
             name=name,
@@ -38,10 +38,26 @@ def create_meal():
         db.session.add(meal)
         db.session.commit()
 
-        return jsonify({"id": meal.id, "message": "Meal created"})
+        return jsonify({"id": meal.id, "message": "Refeicao criada com sucesso"})
 
     else:
         return jsonify({"message": "Dados invalidos"}), 400
+
+
+@app.route("/meal/<int:meal_id>", methods=["GET"])
+def read_meal(meal_id):
+    meal = Meal.query.get(meal_id)
+
+    if not meal:
+        return jsonify({"message": "Refeicao nao encontrada"}), 404
+
+    return jsonify({
+        "id": meal.id,
+        "name": meal.name,
+        "description": meal.description,
+        "date": meal.date,
+        "off_diet": meal.off_diet
+    })
 
 
 if __name__ == '__main__':
