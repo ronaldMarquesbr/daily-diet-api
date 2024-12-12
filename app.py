@@ -60,5 +60,18 @@ def read_meal(meal_id):
     })
 
 
+@app.route("/meal/<int:meal_id>", methods=["DELETE"])
+def delete_meal(meal_id):
+    meal = Meal.query.get(meal_id)
+
+    if not meal:
+        return jsonify({"message": "Refeicao nao encontrada"}), 404
+
+    db.session.delete(meal)
+    db.session.commit()
+
+    return jsonify({"message": "Refeicao deletada com sucesso"})
+
+
 if __name__ == '__main__':
     app.run(debug=True)
