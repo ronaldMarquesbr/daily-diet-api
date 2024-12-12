@@ -1,8 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from database import db
 from os import environ
 from models.meal import Meal
 from dotenv import load_dotenv
+from utils import is_valid_datetime
 
 
 load_dotenv()
@@ -14,9 +15,33 @@ app.config["SQLALCHEMY_DATABASE_URI"] = \
 db.init_app(app)
 
 
-@app.route("/hello-world", methods=["GET"])
-def teste():
-    return jsonify({"message": "Teste"})
+@app.route("/meal", methods=["POST"])
+def create_meal():
+    data = request.json
+    name = data.get("name")
+    description = data.get("description")
+    date = data.get("date")
+    off_diet = data.get("off_diet")
+
+    if name and description and date and off_diet:
+
+        if not is_valid_datetime(date):
+            return jsonify({"message": "Invalid date format"}), 400
+
+        meal = Meal(
+            name=name,
+            description=description,
+            date=date,
+            off_diet=off_diet
+        )
+
+        db.session.add(meal)
+        db.session.commit()
+
+        return jsonify({"id": meal.id, "message": "Meal created"})
+
+    else:
+        return jsonify({"message": "Dados invalidos"}), 400
 
 
 if __name__ == '__main__':
