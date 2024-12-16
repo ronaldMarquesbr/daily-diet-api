@@ -19,21 +19,22 @@ db.init_app(app)
 def create_meal():
     data = request.json
     name = data.get("name")
-    description = data.get("description")
+    description = data.get("description", "")
     date = data.get("date")
     off_diet = data.get("off_diet")
 
-    if name and description and date and off_diet:
-
-        if not is_valid_datetime(date):
-            return jsonify({"message": "Formato de data invalido"}), 400
-
+    if name and off_diet is not None:
         meal = Meal(
             name=name,
             description=description,
-            date=date,
             off_diet=off_diet
         )
+
+        if date:
+            if is_valid_datetime(date):
+                meal.date = date
+            else:
+                return jsonify({"message": "Formato de data invalido"}), 400
 
         db.session.add(meal)
         db.session.commit()
@@ -88,7 +89,7 @@ def update_meal(meal_id):
     db.session.commit()
 
     return jsonify({
-        "meal_id": meal.id,
+        "id": meal.id,
         "message": f"Refeicao {meal.id} atualizada com sucesso"
     })
 
