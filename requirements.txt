@@ -4,3 +4,6 @@ sqlalchemy
 cryptography
 pymysql
 python-dotenv
+requests
+pytest
+pytz
