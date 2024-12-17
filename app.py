@@ -61,6 +61,21 @@ def read_meal(meal_id):
     })
 
 
+@app.route("/meals", methods=["GET"])
+def read_all_meals():
+    meals = Meal.query.all()
+
+    return jsonify({
+        "meals": [{
+            "id": meal.id,
+            "name": meal.name,
+            "description": meal.description,
+            "date": meal.date,
+            "off_diet": meal.off_diet
+        } for meal in meals]
+    })
+
+
 @app.route("/meal/<int:meal_id>", methods=["PATCH"])
 def update_meal(meal_id):
     data = request.json
