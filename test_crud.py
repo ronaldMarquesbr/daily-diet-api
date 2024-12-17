@@ -59,12 +59,29 @@ def test_update_meal():
     assert get_meal_data.get("off_diet") == new_payload.get("off_diet")
 
 
+def test_delete_meal():
+    my_payload = create_payload()
+    create_meal_response = create_meal(my_payload)
+    assert create_meal_response.status_code == 200
+    meal_id = create_meal_response.json()["id"]
+
+    delete_meal_response = delete_meal(meal_id)
+    assert delete_meal_response.status_code == 200
+
+    get_meal_response = get_meal(meal_id)
+    assert get_meal_response.status_code == 404
+
+
 def get_meal(meal_id):
     return requests.get(f"{url}/meal/{meal_id}")
 
 
 def create_meal(payload):
     return requests.post(f"{url}/meal", json=payload)
+
+
+def delete_meal(meal_id):
+    return requests.delete(f"{url}/meal/{meal_id}")
 
 
 def create_payload():
